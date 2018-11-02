@@ -4,12 +4,20 @@
 <link rel="stylesheet" href="css/estilo.css">
 <script language="javascript" src="js/index.js"></script>
 </head>
-<body onload="inicia_jogo();">
+<!-- <body onload="inicia_jogo();">
+-->
 <div id="fundo"></div>
 
-<div id="alerta" class="alerta">
-<div id="alerta_text">Click me</div>
-<button id="ok" >OK</button>
+<div id="alerta" class="alerta" >
+<div id="alerta_text">Iniciar Jogo</div>
+<button id="ok" onclick="inicia_jogo();">OK</button>
+</div>
+
+<div id="lista_jogadores" class="lista_jogadores" >
+<div id="lista_jogadores_text">Escolha um adversário</div>
+<select id="adversario"></select>
+</br>
+<button id="convidar" onclick="convidar();">Convidar</button>
 </div>
 
 <div id="nome" class="jogador">

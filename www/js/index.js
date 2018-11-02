@@ -1,3 +1,14 @@
+// Variáveis
+
+var meuID;
+var websocket;
+var TIMEOUT = 20000;
+var N = 8;
+var i, j;
+var Troca;
+var timeMSG;
+
+
 
 function inicia_jogo(){
 vez = "branco"; //vez de quem jogar
@@ -390,6 +401,138 @@ function seleciona(x,y){
 	
 	function conectar(){
 			document.getElementById('nome').style.display='none';
-			document.getElementById('botao').style.display='none';
-			alert('Aguarde!');
+			
+			var dataAtual = new Date();
+            var tempo = dataAtual.getTime();
+            var key = jogador.value + tempo;
+            var user = {
+                ID: key,
+                Nome: jogador.value,
+                Status: 'Livre',
+                Adv: ''
+            };
+
+            meuID = user;
+
+            connect();
+			
+			console.log(meuID);
+			
+			document.getElementById('lista_jogadores').style.display='block';
+			
+			//document.getElementById('botao').style.display='none';
+			//document.getElementById('alerta').style.display='block';
+			//alert('Aguarde!');
 	}
+	
+	
+	
+	
+	
+	function connect() {
+            websocket = new WebSocket('ws://localhost:8080');
+            websocket.onopen = function() {
+                onOpen()
+            };
+			
+            websocket.onclose = function(e) {
+                console.log('Socket is closed. Reconecta em 1s', e.reason);
+                setTimeout(function() {
+                    connect();
+                }, 1000);
+            };
+			
+            websocket.onmessage = function(e) {
+                console.log('Message:', e.data);
+                onMessage(e);
+            };
+			
+            websocket.onerror = function(err) {
+                console.error('Erro encontrado no socket', err.message, 'Fechando socket');
+                // websocket.close();
+            };
+        };
+
+        function onOpen() {
+            console.log('onOpen')
+            var MSG = {
+                tipo: 'CONECTAR',
+                valor: meuID
+            };
+            websocket.send(JSON.stringify(MSG));
+        };
+		
+		
+		function onMessage(evt) {
+            var msg = evt.data
+            msg = JSON.parse(msg);
+            switch (msg.tipo) {
+                case 'CONECTADO': // Resposta do servidor quando conectou
+                    console.log('Conectou');
+                    break;
+				case 'LISTA': // Recebe a lista do jogadores atualizada
+                    RefreshCombo(msg); // Atualiza combobox
+                    break;
+            }
+            console.log('Recebeu msg');
+        };
+		
+		
+		
+        function RefreshCombo(Dados) // Atualiza combobox com a lista atualizada recebida
+        {
+            var combo = document.getElementById('adversario');
+            //LIMPA COMBO-BOX
+            while (combo.length) {
+                combo.remove(0);
+            }
+            //ADICIONA USUARIOS AO COMBO-BOX
+            var k = 0;
+            for (let j = 0; j < Dados.valor.length; j++) {
+                if (Dados.valor[j].ID != meuID.ID) {
+                    combo.options[k] = new Option(Dados.valor[j].Nome + ' - ' + Dados.valor[j].Status, Dados.valor[j].ID);
+                    if (Dados.valor[j].Status == 'Livre') {
+                        combo[k].style = "background-color:#0de26d";
+                    } else {
+                        combo[k].style.color = "red";
+                    }
+                    k++;
+                }
+				else
+				{
+				meuID.Status = Dados.valor[j].Status;
+				meuID.Adv = Dados.valor[j].Adv;
+				}
+            }
+        }
+		
+		
+		
+        function convidar() { // Fazer um convite de jogo
+
+            if (adversario.options[adversario.selectedIndex].text.match(/Livre/)) {
+                var Convite = {
+                    destinatario: adversario.options[adversario.selectedIndex].value,
+                    remetente: meuID.ID,
+					nomeRemetente: meuID.Nome
+                };
+                var CNV = {
+                    tipo: 'CONVIDAR',
+                    valor: Convite
+                };				
+                websocket.send(JSON.stringify(CNV));
+				document.getElementById('lista_jogadores').style.display='none';
+					timeMSG = setTimeout(function(){
+					document.getElementById('lista_jogadores').style.display='block';
+					alert('TEMPO ESGOTADO! Tente novamente...');
+				},TIMEOUT);
+				
+                alert('Convite enviado, aguarde.');
+				
+				
+            } else {
+                alert('Jogador ocupado, tente outro adversario');
+            }
+        };
+
+
