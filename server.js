@@ -49,6 +49,7 @@ wss.on('connection', function connection(ws) {
     ws.Nome = '';
     ws.Status = '';
     ws.Adv = '';
+	ws.Cor = '';
     Vetor_JOG.push(ws);
 
     ws.on('message', function incoming(MSG) {
@@ -62,8 +63,9 @@ wss.on('connection', function connection(ws) {
             Vetor_JOG[Vetor_JOG.length - 1].Nome = MSG.valor.Nome;
             Vetor_JOG[Vetor_JOG.length - 1].Status = MSG.valor.Status;
             Vetor_JOG[Vetor_JOG.length - 1].Adv = MSG.valor.Adv;
+			Vetor_JOG[Vetor_JOG.length - 1].Cor = MSG.valor.Cor;
 
-            console.log(MSG.valor.ID + ' - ' + MSG.valor.Nome + ' - ' + MSG.valor.Status + ' - ' + MSG.valor.Adv + ' conectou.');
+            console.log(MSG.valor.ID + ' - ' + MSG.valor.Nome + ' - ' + MSG.valor.Status + ' - ' + MSG.valor.Adv + ' - ' + MSG.valor.Cor + ' conectou.');
             console.log('Conectado(s): ' + Vetor_JOG.length);
 
             var msgRetorno = {
@@ -110,7 +112,7 @@ wss.on('connection', function connection(ws) {
 				enviarListaAtualizada(); // Envia para todos a lista atualizada de usuários
 			}
         }
-
+*/
 
 
         if (MSG.tipo == 'CONVIDAR') // rementente solicitou convite de jogo para destinatario
@@ -129,7 +131,8 @@ wss.on('connection', function connection(ws) {
 							}
                     };
                     Vetor_JOG[x].send(JSON.stringify(msgConvite));
-                }
+					break;
+                } 
             }
 
         }
@@ -138,32 +141,36 @@ wss.on('connection', function connection(ws) {
 
         if (MSG.tipo == 'ACEITA') // destinatario aceitou convite de jogo do remetente
         {
+			var cor_remetente;
 
-            console.log(MSG.valor.destinatario + ' Aceitou convite de -> ' + MSG.valor.remetente);
+			if(MSG.valor.Cor=='branco'){cor_remetente='preto';}else{cor_remetente='branco';}
 
-            for (let x = 0; x < Vetor_JOG.length; x++) {
-                if (Vetor_JOG[x].ID == MSG.valor.remetente) // atualiza lista REMETENTE
-                {
-                    Vetor_JOG[x].Status = 'Jogando';
-                    Vetor_JOG[x].Adv = MSG.valor.destinatario;
-
-                    let msgConvite = {
-                        tipo: 'ACEITOU',
-                        valor: MSG.valor
-                    }; // envia mensagem ao REMETENTE que DESTINATARIO aceitou convite
-                    Vetor_JOG[x].send(JSON.stringify(msgConvite));
-                }
-
-                if (Vetor_JOG[x].ID == MSG.valor.destinatario) // atualiza lista DESTINATARIO
+            console.log(MSG.valor.destinatario + '(' + MSG.valor.Cor + ') Aceitou convite de -> ' + MSG.valor.remetente + '(' + cor_remetente + ')' );
+			
+            for (var x = 0; x < Vetor_JOG.length; x++) { // atualiza lista DESTINATARIO
+                if (Vetor_JOG[x].ID == MSG.valor.destinatario) 
                 {
                     Vetor_JOG[x].Status = 'Jogando';
                     Vetor_JOG[x].Adv = MSG.valor.remetente;
+					Vetor_JOG[x].Cor = MSG.valor.Cor;
                 }
             }
+			
+			MSG.tipo = 'ACEITOU'; 
+			MSG.valor.Cor = cor_remetente;
+			
+			for (var x = 0; x < Vetor_JOG.length; x++) { // atualiza lista REMETENTE
+                if (Vetor_JOG[x].ID == MSG.valor.remetente) 
+                {
+                    Vetor_JOG[x].Status = 'Jogando';
+                    Vetor_JOG[x].Adv = MSG.valor.destinatario;
+					Vetor_JOG[x].Cor = cor_remetente;
+                    Vetor_JOG[x].send(JSON.stringify(MSG));
+                }
+			}
+			
             enviarListaAtualizada(); // Envia para todos a lista atualizada de usuários
         }
-
-
 
         if (MSG.tipo == 'RECUSA') // destinatario recusou convite de jogo do remetente
         {
@@ -178,13 +185,13 @@ wss.on('connection', function connection(ws) {
                         valor: MSG.valor
                     };
                     Vetor_JOG[x].send(JSON.stringify(msgConvite));
+					break;
                 }
             }
 
-
         }
 
-
+/*
 
 
         if (MSG.tipo == 'FINALIZAR') // Algum jogador quer finalizar o jogo
@@ -277,9 +284,11 @@ function enviarListaAtualizada() { // envia lista de jogadores atualizada
             ID: Vetor_JOG[x].ID,
             Nome: Vetor_JOG[x].Nome,
             Status: Vetor_JOG[x].Status,
-            Adv: Vetor_JOG[x].Adv
+            Adv: Vetor_JOG[x].Adv,
+			Cor: Vetor_JOG[x].Cor
         });
     }
+	//console.log('LISTA-ATUALIZADA: '+lista);
 
     var msgLista = {
         tipo: 'LISTA',

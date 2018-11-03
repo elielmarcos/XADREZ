@@ -7,14 +7,19 @@ var N = 8;
 var i, j;
 var Troca;
 var timeMSG;
+var Flag=0;
+var timeStart=0;
+var msg_CONVITE;
+var vez; //vez de quem jogar
 
 
 
 function inicia_jogo(){
-vez = "branco"; //vez de quem jogar
+	
+	document.getElementById('lista_jogadores').style.display='none';
+	document.getElementById('escolhecor-inicio').style.display='none';
+	document.getElementById('fundo').style.display='none';
 
-
-      //alert('Olá mundo!');
     
 
 //muda a classe das pecas pretas(encima) para mostrar imgens das pecas
@@ -89,46 +94,46 @@ vez = "branco"; //vez de quem jogar
 	
 		
 //posiciona as pecas pretas no array
-	peca[1][1]['peca']="torre";		peca[1][1]['cor']="preto";	peca[1][1]['mov']=0; il['preto']['torre'] = "&#9820;";
-	peca[1][2]['peca']="cavalo";	peca[1][2]['cor']="preto";	peca[1][2]['mov']=0; il['preto']['cavalo'] = "&#9822;";
-	peca[1][3]['peca']="bispo"; 	peca[1][3]['cor']="preto";	peca[1][3]['mov']=0; il['preto']['bispo'] = "&#9821;";
-	peca[1][4]['peca']="rainha";	peca[1][4]['cor']="preto";	peca[1][4]['mov']=0; il['preto']['rainha'] = "&#9819;";
-	peca[1][5]['peca']="rei";		peca[1][5]['cor']="preto";	peca[1][5]['mov']=0; il['preto']['rei'] = "&#9818;";
-	peca[1][6]['peca']="bispo";		peca[1][6]['cor']="preto";	peca[1][6]['mov']=0; 
-	peca[1][7]['peca']="cavalo";	peca[1][7]['cor']="preto";	peca[1][7]['mov']=0; 
-	peca[1][8]['peca']="torre";		peca[1][8]['cor']="preto";	peca[1][8]['mov']=0; 
+	peca[1][1]['peca']="torre";		peca[1][1]['cor']="preto";	/*peca[1][1]['mov']=0;*/ il['preto']['torre'] = "&#9820;";
+	peca[1][2]['peca']="cavalo";	peca[1][2]['cor']="preto";	/*peca[1][2]['mov']=0;*/ il['preto']['cavalo'] = "&#9822;";
+	peca[1][3]['peca']="bispo"; 	peca[1][3]['cor']="preto";	/*peca[1][3]['mov']=0;*/ il['preto']['bispo'] = "&#9821;";
+	peca[1][4]['peca']="rainha";	peca[1][4]['cor']="preto";	/*peca[1][4]['mov']=0;*/ il['preto']['rainha'] = "&#9819;";
+	peca[1][5]['peca']="rei";		peca[1][5]['cor']="preto";	/*peca[1][5]['mov']=0;*/ il['preto']['rei'] = "&#9818;";
+	peca[1][6]['peca']="bispo";		peca[1][6]['cor']="preto";	/*peca[1][6]['mov']=0;*/ 
+	peca[1][7]['peca']="cavalo";	peca[1][7]['cor']="preto";	/*peca[1][7]['mov']=0;*/ 
+	peca[1][8]['peca']="torre";		peca[1][8]['cor']="preto";	/*peca[1][8]['mov']=0;*/
 
-	peca[2][1]['peca']="peao";		peca[2][1]['cor']="preto";	peca[2][1]['mov']=0; il['preto']['peao'] = "&#9823;";
-	peca[2][2]['peca']="peao";		peca[2][2]['cor']="preto";	peca[2][2]['mov']=0;
-	peca[2][3]['peca']="peao"; 		peca[2][3]['cor']="preto";	peca[2][3]['mov']=0;
-	peca[2][4]['peca']="peao";		peca[2][4]['cor']="preto";	peca[2][4]['mov']=0;
-	peca[2][5]['peca']="peao";		peca[2][5]['cor']="preto";	peca[2][5]['mov']=0;
-	peca[2][6]['peca']="peao";		peca[2][6]['cor']="preto";	peca[2][6]['mov']=0;
-	peca[2][7]['peca']="peao";		peca[2][7]['cor']="preto";	peca[2][7]['mov']=0;
-	peca[2][8]['peca']="peao";		peca[2][8]['cor']="preto";	peca[2][8]['mov']=0;	
+	peca[2][1]['peca']="peao";		peca[2][1]['cor']="preto";	/*peca[2][1]['mov']=0;*/ il['preto']['peao'] = "&#9823;";
+	peca[2][2]['peca']="peao";		peca[2][2]['cor']="preto";	/*peca[2][2]['mov']=0;*/
+	peca[2][3]['peca']="peao"; 		peca[2][3]['cor']="preto";	/*peca[2][3]['mov']=0;*/
+	peca[2][4]['peca']="peao";		peca[2][4]['cor']="preto";	/*peca[2][4]['mov']=0;*/
+	peca[2][5]['peca']="peao";		peca[2][5]['cor']="preto";	/*peca[2][5]['mov']=0;*/
+	peca[2][6]['peca']="peao";		peca[2][6]['cor']="preto";	/*peca[2][6]['mov']=0;*/
+	peca[2][7]['peca']="peao";		peca[2][7]['cor']="preto";	/*peca[2][7]['mov']=0;*/
+	peca[2][8]['peca']="peao";		peca[2][8]['cor']="preto";	/*peca[2][8]['mov']=0;*/
 
 //posiciona as pecas brancas no array	
-	peca[8][1]['peca']="torre";		peca[8][1]['cor']="branco";	peca[8][1]['mov']=0; il['branco']['torre'] = "&#9814;";
-	peca[8][2]['peca']="cavalo";	peca[8][2]['cor']="branco";	peca[8][2]['mov']=0; il['branco']['cavalo'] = "&#9816;";
-	peca[8][3]['peca']="bispo"; 	peca[8][3]['cor']="branco";	peca[8][3]['mov']=0; il['branco']['bispo'] = "&#9815;";
-	peca[8][4]['peca']="rainha";	peca[8][4]['cor']="branco";	peca[8][4]['mov']=0; il['branco']['rainha'] = "&#9813;";
-	peca[8][5]['peca']="rei";		peca[8][5]['cor']="branco";	peca[8][5]['mov']=0; il['branco']['rei'] = "&#9812;";
-	peca[8][6]['peca']="bispo";		peca[8][6]['cor']="branco";	peca[8][6]['mov']=0;
-	peca[8][7]['peca']="cavalo";	peca[8][7]['cor']="branco";	peca[8][7]['mov']=0;
-	peca[8][8]['peca']="torre";		peca[8][8]['cor']="branco";	peca[8][8]['mov']=0;
+	peca[8][1]['peca']="torre";		peca[8][1]['cor']="branco";	/*peca[8][1]['mov']=0;*/ il['branco']['torre'] = "&#9814;";
+	peca[8][2]['peca']="cavalo";	peca[8][2]['cor']="branco";	/*peca[8][2]['mov']=0;*/ il['branco']['cavalo'] = "&#9816;";
+	peca[8][3]['peca']="bispo"; 	peca[8][3]['cor']="branco";	/*peca[8][3]['mov']=0;*/ il['branco']['bispo'] = "&#9815;";
+	peca[8][4]['peca']="rainha";	peca[8][4]['cor']="branco";	/*peca[8][4]['mov']=0;*/ il['branco']['rainha'] = "&#9813;";
+	peca[8][5]['peca']="rei";		peca[8][5]['cor']="branco";	/*peca[8][5]['mov']=0;*/ il['branco']['rei'] = "&#9812;";
+	peca[8][6]['peca']="bispo";		peca[8][6]['cor']="branco";	/*peca[8][6]['mov']=0;*/
+	peca[8][7]['peca']="cavalo";	peca[8][7]['cor']="branco";	/*peca[8][7]['mov']=0;*/
+	peca[8][8]['peca']="torre";		peca[8][8]['cor']="branco";	/*peca[8][8]['mov']=0;*/
 
-	peca[7][1]['peca']="peao";		peca[7][1]['cor']="branco";	peca[7][1]['mov']=0; il['branco']['peao'] = "&#9817;";
-	peca[7][2]['peca']="peao";		peca[7][2]['cor']="branco";	peca[7][2]['mov']=0;
-	peca[7][3]['peca']="peao"; 		peca[7][3]['cor']="branco";	peca[7][3]['mov']=0;
-	peca[7][4]['peca']="peao";		peca[7][4]['cor']="branco";	peca[7][4]['mov']=0;
-	peca[7][5]['peca']="peao";		peca[7][5]['cor']="branco";	peca[7][5]['mov']=0;
-	peca[7][6]['peca']="peao";		peca[7][6]['cor']="branco";	peca[7][6]['mov']=0;
-	peca[7][7]['peca']="peao";		peca[7][7]['cor']="branco";	peca[7][7]['mov']=0;
-	peca[7][8]['peca']="peao";		peca[7][8]['cor']="branco";	peca[7][8]['mov']=0;	
+	peca[7][1]['peca']="peao";		peca[7][1]['cor']="branco";	/*peca[7][1]['mov']=0;*/ il['branco']['peao'] = "&#9817;";
+	peca[7][2]['peca']="peao";		peca[7][2]['cor']="branco";	/*peca[7][2]['mov']=0;*/
+	peca[7][3]['peca']="peao"; 		peca[7][3]['cor']="branco";	/*peca[7][3]['mov']=0;*/
+	peca[7][4]['peca']="peao";		peca[7][4]['cor']="branco";	/*peca[7][4]['mov']=0;*/
+	peca[7][5]['peca']="peao";		peca[7][5]['cor']="branco";	/*peca[7][5]['mov']=0;*/
+	peca[7][6]['peca']="peao";		peca[7][6]['cor']="branco";	/*peca[7][6]['mov']=0;*/
+	peca[7][7]['peca']="peao";		peca[7][7]['cor']="branco";	/*peca[7][7]['mov']=0;*/
+	peca[7][8]['peca']="peao";		peca[7][8]['cor']="branco";	/*peca[7][8]['mov']=0;*/
 
 
 
-///aray para movimentar as pecas
+///array para movimentar as pecas
 	movimenta = new Array();
 	
 	movimenta['selecionada'] = new Array();
@@ -137,13 +142,14 @@ vez = "branco"; //vez de quem jogar
 	movimenta['selecionada']['peca']="0";
 	movimenta['selecionada']['cor']="0";
 	
-	movimenta['destino'] = new Array();
+	/*movimenta['destino'] = new Array();
 	movimenta['destino']['x'] =0;
 	movimenta['destino']['y'] =0; 
 	movimenta['destino']['peca'] ="0";
 	movimenta['destino']['cor']="0";
+	*/
 
-///aray para os possiveis movimentos
+///array para os possiveis movimentos
 	possiveis = new Array();
 
 
@@ -160,131 +166,131 @@ function possiveis_movimentos(){
 		possiveis[c] = "t"+x+y; c++;
 
 ///////////////////////////////////////////////////////////////////////////////////PEAO////////////////////////////////
-	if(peca[x][y]['peca']=='peao'){
-		if(peca[x][y]['cor']=="branco"){
+		if(peca[x][y]['peca']=='peao'){
+			if(peca[x][y]['cor']=="branco"){
 
-				if(!peca[x-1][y]['peca']){
-					possivel(x-1,y);
-				}if(y-1>0 && peca[x-1][y-1]['peca']){
-					possivel(x-1,y-1);						
-				}
-				if(y+1<9 && peca[x-1][y+1]['peca']){
-					possivel(x-1,y+1);					
-				}					
-
-				if(x==7){				
-					if(!peca[x-2][y]['peca'] && !peca[x-1][y]['peca']){
-						possivel(x-2,y);
+					if(!peca[x-1][y]['peca']){
+						possivel(x-1,y);
+					}if(y-1>0 && peca[x-1][y-1]['peca']){
+						possivel(x-1,y-1);						
 					}
-				}
+					if(y+1<9 && peca[x-1][y+1]['peca']){
+						possivel(x-1,y+1);					
+					}					
 
-		}
-		
-		
-		if(peca[x][y]['cor']=="preto"){
-				
-				if(!peca[x+1][y]['peca']){
-					possivel(x+1,y);
-				}if(y-1>0 && peca[x+1][y-1]['peca']){
-					possivel(x+1,y-1);						
-				}
-				if(y+1<9 && peca[x+1][y+1]['peca']){
-					possivel(x+1,y+1);					
-				}					
-
-				if(x==2){
-				
-					if(!peca[x+2][y]['peca'] && !peca[x+1][y]['peca']){
-						possivel(x+2,y);
+					if(x==7){ // primeiro movimento pulo duplo
+						if(!peca[x-2][y]['peca'] && !peca[x-1][y]['peca']){
+							possivel(x-2,y);
+						}
 					}
-		
-				}
 
+			}
+			
+			
+			if(peca[x][y]['cor']=="preto"){
+					
+					if(!peca[x+1][y]['peca']){
+						possivel(x+1,y);
+					}if(y-1>0 && peca[x+1][y-1]['peca']){
+						possivel(x+1,y-1);						
+					}
+					if(y+1<9 && peca[x+1][y+1]['peca']){
+						possivel(x+1,y+1);					
+					}					
+
+					if(x==2){ // primeiro movimento pulo duplo
+					
+						if(!peca[x+2][y]['peca'] && !peca[x+1][y]['peca']){
+							possivel(x+2,y);
+						}
+			
+					}
+
+			}
 		}
-	}
 ///////////////////////////////////////////////////////////////////////////////////////FIM PEAO//////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////CAVALO ////////////////////////////////
 
-	if(peca[x][y]['peca']=='cavalo'){
-		
-		possivel(x-1,y-2);
-		possivel(x+1,y+2);
-		possivel(x+1,y-2);
-		possivel(x-1,y+2);
-		possivel(x-2,y-1);
-		possivel(x+2,y+1);
-		possivel(x+2,y-1);
-		possivel(x-2,y+1);
-		
-	}
+		if(peca[x][y]['peca']=='cavalo'){
+			
+			possivel(x-1,y-2);
+			possivel(x+1,y+2);
+			possivel(x+1,y-2);
+			possivel(x-1,y+2);
+			possivel(x-2,y-1);
+			possivel(x+2,y+1);
+			possivel(x+2,y-1);
+			possivel(x-2,y+1);
+			
+		}
 //////////////////////////////////////////////////////////////////////////////////////FIM CAVALO ////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////REI ///////////////////////////////////
-	if(peca[x][y]['peca']=='rei'){
-		possivel(x-1,y);
-		possivel(x,y-1);
-		possivel(x-1,y-1);
-		possivel(x+1,y);
-		possivel(x,y+1);
-		possivel(x+1,y+1);
-		possivel(x-1,y+1);
-		possivel(x+1,y-1);
-	}
+		if(peca[x][y]['peca']=='rei'){
+			possivel(x-1,y);
+			possivel(x,y-1);
+			possivel(x-1,y-1);
+			possivel(x+1,y);
+			possivel(x,y+1);
+			possivel(x+1,y+1);
+			possivel(x-1,y+1);
+			possivel(x+1,y-1);
+		}
 //////////////////////////////////////////////////////////////////////////////////////FIM REI ////////////////////////////
 
 
 //////////////////////////////////////////////////////////////////////////////////////TORRE ///////////////////////////////////
-	if(peca[x][y]['peca']=='torre'){
-		
-		for(i=1;possivel(x-i,y);i++);
-		for(i=1;possivel(x+i,y);i++);
-		for(i=1;possivel(x,y-i);i++);
-		for(i=1;possivel(x,y+i);i++);
-	}
+		if(peca[x][y]['peca']=='torre'){
+			
+			for(i=1;possivel(x-i,y);i++);
+			for(i=1;possivel(x+i,y);i++);
+			for(i=1;possivel(x,y-i);i++);
+			for(i=1;possivel(x,y+i);i++);
+		}
 //////////////////////////////////////////////////////////////////////////////////////FIM TORRE ////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////BISPO ///////////////////////////////////
-	if(peca[x][y]['peca']=='bispo'){
-		
-		for(i=1;possivel(x-i,y-i);i++);
-		for(i=1;possivel(x+i,y+i);i++);
-		for(i=1;possivel(x-i,y+i);i++);
-		for(i=1;possivel(x+i,y-i);i++);
-	}
+		if(peca[x][y]['peca']=='bispo'){
+			
+			for(i=1;possivel(x-i,y-i);i++);
+			for(i=1;possivel(x+i,y+i);i++);
+			for(i=1;possivel(x-i,y+i);i++);
+			for(i=1;possivel(x+i,y-i);i++);
+		}
 //////////////////////////////////////////////////////////////////////////////////////FIM BISPO ////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////RAINHA ///////////////////////////////////
-	if(peca[x][y]['peca']=='rainha'){
-		
-		for(i=1;possivel(x-i,y-i);i++);
-		for(i=1;possivel(x+i,y+i);i++);
-		for(i=1;possivel(x-i,y+i);i++);
-		for(i=1;possivel(x+i,y-i);i++);
-		for(i=1;possivel(x-i,y);i++);
-		for(i=1;possivel(x+i,y);i++);
-		for(i=1;possivel(x,y-i);i++);
-		for(i=1;possivel(x,y+i);i++);
-		
-	}
+		if(peca[x][y]['peca']=='rainha'){
+			
+			for(i=1;possivel(x-i,y-i);i++);
+			for(i=1;possivel(x+i,y+i);i++);
+			for(i=1;possivel(x-i,y+i);i++);
+			for(i=1;possivel(x+i,y-i);i++);
+			for(i=1;possivel(x-i,y);i++);
+			for(i=1;possivel(x+i,y);i++);
+			for(i=1;possivel(x,y-i);i++);
+			for(i=1;possivel(x,y+i);i++);
+			
+		}
 //////////////////////////////////////////////////////////////////////////////////////FIM RAINHA ////////////////////////////
 
 
 
-function possivel(px,py){
-		if(px>0 && px <9 && py>0 && py <9 && peca[px][py]['cor']!= movimenta['selecionada']['cor']){
-			document.getElementById('t'+(px)+(py)).style.backgroundColor = "#3C9"; //muda cor de fundo
-			possiveis[c] = "t"+(px)+(py); c++;
-			
-			if(!peca[px][py]['peca']){
-				return true;
-			}
-		}else{
-			return false;
-		}
+		function possivel(px,py){
+				if(px>0 && px <9 && py>0 && py <9 && peca[px][py]['cor']!= movimenta['selecionada']['cor']){
+					document.getElementById('t'+(px)+(py)).style.backgroundColor = "#3C9"; //muda cor de fundo
+					possiveis[c] = "t"+(px)+(py); c++;
+					
+					if(!peca[px][py]['peca']){
+						return true;
+					}
+				}else{
+					return false;
+				}
 
-	
-	}
+			
+			}
 
 	return c;
 }
@@ -292,11 +298,11 @@ function possivel(px,py){
 function volta_fundo(){
 	var cf;
 	for(cf=0;cf<possiveis.length;cf++){
-		document.getElementById(possiveis[cf]).style.backgroundColor = "";
+		document.getElementById(possiveis[cf]).style.backgroundColor = ""; 
 	}	
 }
 
-function verifica_possivel(x,y,c){
+function verifica_possivel(x,y,c){ // faz a busca no vetor de possíveis verificando se tem a posição de destino neste vetor 
 	var pode=0;
 	var cp;
 	var div = "t"+x+y;
@@ -315,8 +321,11 @@ function verifica_possivel(x,y,c){
 
 function seleciona(x,y){
 	
-		
-		if((movimenta['selecionada']['x']==0 || peca[x][y]['cor'] == movimenta['selecionada']['cor']) && peca[x][y]['cor']==vez){
+	//var Matriz_Sel= new Array();
+	
+	if (meuID.Cor == vez){	
+		// ((primeira vez que clica(origem) == 0 || cliquei em outra peça minha) && é a minha vez de jogar)?
+		if((movimenta['selecionada']['x'] == 0 || peca[x][y]['cor'] == movimenta['selecionada']['cor']) && peca[x][y]['cor']==vez){
 			if(movimenta['selecionada']['x']!=0){
 				volta_fundo(); //volta a cor de fundo normal
 			}
@@ -348,15 +357,16 @@ function seleciona(x,y){
 				xe=x;ye=y;
 			}
 			
-			if(peca[x][y]['cor'] != movimenta['selecionada']['cor']){
-				movimenta['destino']['x'] =x;	//recebe o x do destino(segundo clique)
-				movimenta['destino']['y'] =y;  //recebe y do destino(segundo clique)
+			if(peca[x][y]['cor'] != movimenta['selecionada']['cor']){ // peça selecionada é diferente da peça de origem
+				
+				/*movimenta['destino']['x'] = x;	//recebe o x do destino(segundo clique)
+				movimenta['destino']['y'] = y;  //recebe y do destino(segundo clique)
 				
 				if(peca[x][y]['peca']){  //se tiver alguma peca nessa posição
 					movimenta['destino']['peca'] = peca[x][y]['peca'];	//destino recebe a peca selecionada
 					movimenta['destino']['cor'] = peca[x][y]['cor'];	//destino recebe a cor selecionada
 				}
-				
+				*/
 				
 				document.getElementById("t"+movimenta['selecionada']['x']+""+movimenta['selecionada']['y']).innerHTML = ""; //selcionada fica sem imagem
 				document.getElementById("t"+x+""+y).innerHTML = il[movimenta['selecionada']['cor']][movimenta['selecionada']['peca']]; //destino recebe a imagem da peça selecinada
@@ -376,9 +386,11 @@ function seleciona(x,y){
 
 			volta_fundo(); //volta a cor de fundo normal
 			
-			if(vez=="branco"){vez="preto";}else{vez="branco";} //troca a vez
+			//if(vez=="branco"){vez="preto";}else{vez="branco";} //troca a vez
 
 		}
+		
+	}
 		
 		
 
@@ -394,8 +406,44 @@ function seleciona(x,y){
 
 	function escolhecor_incio(cor){
 			document.getElementById('escolhecor-inicio').style.display='none';
-			document.getElementById('fundo').style.display='none';
-			vez = cor; //vez de quem jogar
+			
+			if (cor != 'nulo')
+			{
+				document.getElementById('fundo').style.display='none';
+				document.getElementById('lista_jogadores').style.display='none';
+				meuID.Cor = cor; //cor de quem joga
+			}
+			
+			//alert(meuID.Cor);
+			
+			if (cor == 'preto' || cor == 'branco'){
+				if(Date.now()-timeStart>TIMEOUT){
+					troca_valor_div("TEMPO ESGOSTADO PARA RESPOSTA!");
+				}else{
+							meuID.Status = 'Jogando';
+							meuID.Adv = msg_CONVITE.valor.remetente;
+							msg_CONVITE.valor.Cor = meuID.Cor;
+							websocket.send(JSON.stringify({
+								tipo: 'ACEITA',
+								valor: msg_CONVITE.valor
+							}))
+							
+						if(meuID.Cor=="branco"){vez="preto";}else{vez="branco";}
+						inicia_jogo(); // inicia jogo
+				}
+				
+			} else { // Caso recuse
+
+				if(Date.now()-timeStart>TIMEOUT){
+					troca_valor_div("TEMPO ESGOSTADO PARA RESPOSTA!");
+				}else{
+						msg_CONVITE.valor.nomeDestinatario = meuID.Nome;
+						websocket.send(JSON.stringify({
+							tipo: 'RECUSA',
+							valor: msg_CONVITE.valor
+						}))
+				}
+			}
 
 	}
 	
@@ -409,7 +457,8 @@ function seleciona(x,y){
                 ID: key,
                 Nome: jogador.value,
                 Status: 'Livre',
-                Adv: ''
+                Adv: '',
+				Cor: ''
             };
 
             meuID = user;
@@ -473,9 +522,30 @@ function seleciona(x,y){
 				case 'LISTA': // Recebe a lista do jogadores atualizada
                     RefreshCombo(msg); // Atualiza combobox
                     break;
+				case 'CONVITE': // Recebe o convite do Remetente para jogar 
+				    timeStart = Date.now();
+					msg_CONVITE = msg;
+					mostra_convite('Convite de '+ msg.valor.nomeRemetente+', aceita?');
+					break;
+				case 'ACEITOU': // Recebe confirmação de convite aceito para jogar
+                    meuID.Adv = msg.valor.destinatario;
+					meuID.Cor = msg.valor.Cor;
+                    meuID.Status = 'Jogando';
+					//alert(meuID.Cor);
+					clearTimeout(timeMSG);
+					vez = msg.valor.Cor;
+                    inicia_jogo(); // inicia jogo
+                    break;
+                case 'RECUSOU': // Recebe a recusa de convite para jogar
+					clearTimeout(timeMSG);
+					document.getElementById('lista_jogadores').style.display='block';
+                    troca_valor_div(msg.valor.nomeDestinatario + ' nao aceitou seu convite, tente outro jogador.');
+                    break;
             }
             console.log('Recebeu msg');
         };
+		
+		
 		
 		
 		
@@ -502,6 +572,7 @@ function seleciona(x,y){
 				{
 				meuID.Status = Dados.valor[j].Status;
 				meuID.Adv = Dados.valor[j].Adv;
+				meuID.Cor = Dados.valor[j].Cor;
 				}
             }
         }
@@ -524,15 +595,30 @@ function seleciona(x,y){
 				document.getElementById('lista_jogadores').style.display='none';
 					timeMSG = setTimeout(function(){
 					document.getElementById('lista_jogadores').style.display='block';
-					alert('TEMPO ESGOTADO! Tente novamente...');
+					troca_valor_div('TEMPO ESGOTADO! Tente novamente...');
 				},TIMEOUT);
 				
-                alert('Convite enviado, aguarde.');
+                troca_valor_div('Convite enviado, aguarde.');
 				
 				
             } else {
-                alert('Jogador ocupado, tente outro adversario');
+                troca_valor_div('Jogador ocupado, tente outro adversario');
             }
         };
+
+		function OK(){
+			document.getElementById('id_generico_pai').style.display='none';
+		};
+		
+		
+		function troca_valor_div(texto){
+			document.getElementById('id_generico_filho').innerHTML = texto;	
+			document.getElementById('id_generico_pai').style.display='block';
+		}
+		
+		function mostra_convite(adversario){			
+			document.getElementById('escolhecor-inicio-adv_text').innerHTML = adversario;
+			document.getElementById('escolhecor-inicio').style.display='block';	
+		}
 
 
