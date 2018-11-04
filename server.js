@@ -1,4 +1,3 @@
-
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -16,10 +15,11 @@ const portExpress = 8000;
 const portWS = 8080;
 
 var Vetor_JOG = [];
+var possiveis = new Array();
+var movimenta;
+var peca;
 
 app.use(express.static('www'));
-
-
 
 // Servidor disponibiliza uma porta para a conexão websocket
 const wss = new WebSocket.Server({port : portWS}, function() {
@@ -29,19 +29,10 @@ const wss = new WebSocket.Server({port : portWS}, function() {
 // porta 8000: porta de conexão websocket
 // porta 8080: porta da página requisitada
 
-
 var server = app.listen(portExpress , function () {
-
-    //var host = server.address().address;
     var port = server.address().port;
-
     console.log('EXPRESS RODANDO NA PORTA http://%s:%s', addresses, port);
-
 })
-
-
-
-
 
 wss.on('connection', function connection(ws) {
 
@@ -55,7 +46,6 @@ wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(MSG) {
 
         MSG = JSON.parse(MSG);
-
 
         if (MSG.tipo == 'CONECTAR') // Novo usuario pedindo para conectar
         {
@@ -77,43 +67,102 @@ wss.on('connection', function connection(ws) {
             enviarListaAtualizada(); // Envia para todos a lista atualizada de usuários
 
         }
-
-
-/*
-        if (MSG.tipo == 'COMANDO') // Recebeu comando de algum jogador
+		
+		if (MSG.tipo == 'MOVIMENTO') // Recebeu comando de algum jogador
         {
-			let flag = false;
-			console.log(ws.ID + ' realizou movimento '+MSG.valor);
-
-            for (let x = 0; x < Vetor_JOG.length; x++)
-            {
-                if (Vetor_JOG[x].ID == ws.Adv) {
-                    ws.send(JSON.stringify(MSG)); // envia para jogador
-                    Vetor_JOG[x].send(JSON.stringify(MSG)); // envia para adversario
-					flag = true;
-                    break;
-                }
-            }
+			peca = MSG.valor.peca;
+			movimenta = MSG.valor.movimenta;
 			
-			if(flag == false){
-				for (let x = 0; x < Vetor_JOG.length; x++)
+			if(!seleciona(movimenta[1]['x'],movimenta[1]['y'])){
+			
+				var flag = false;
+				console.log(ws.ID + ' realizou movimento (' + movimenta[0]['x'] +','+ movimenta[0]['y']+') ' + movimenta[0]['peca'] + ' ' + movimenta[0]['cor'] + ' -> (' + movimenta[1]['x'] +','+ movimenta[1]['y']+')');
+
+				for (var x = 0; x < Vetor_JOG.length; x++)
 				{
-					if (Vetor_JOG[x] == ws) {
-						Vetor_JOG[x].Adv = ''; 
-						Vetor_JOG[x].Status = 'Livre';
+					if (Vetor_JOG[x].ID == ws.Adv) {
+						MSG.valor.vez = Vetor_JOG[x].Cor; // envia pro adversario a cor
+						ws.send(JSON.stringify(MSG)); // envia para jogador
+						Vetor_JOG[x].send(JSON.stringify(MSG)); // envia para adversario
+						flag = true;
 						break;
 					}
 				}
-				let msgFim = {
-					tipo: 'FINALIZAR',
-                    valor: {nomeRemetente: 'ADVERSARIO'}
-                }; // envia mensagem ao REMENTENTE para finalizar jogo
-                ws.send(JSON.stringify(msgFim));
-				enviarListaAtualizada(); // Envia para todos a lista atualizada de usuários
-			}
-        }
-*/
+				
+				if(flag == false){
+					for (var x = 0; x < Vetor_JOG.length; x++)
+					{
+						if (Vetor_JOG[x] == ws) {
+							Vetor_JOG[x].Adv = ''; 
+							Vetor_JOG[x].Status = 'Livre';
+							Vetor_JOG[x].Cor = '';
+							break;
+						}
+					}
+					var msgFim = {
+						tipo: 'FINALIZAR',
+						valor: {nomeRemetente: 'ADVERSARIO'}
+					}; // envia mensagem ao REMENTENTE para finalizar jogo
+					ws.send(JSON.stringify(msgFim));
+					enviarListaAtualizada(); // Envia para todos a lista atualizada de usuários
+				}
+			}else{
+				var flag = false;
+				console.log(ws.ID + ' realizou movimento (' + movimenta[0]['x'] +','+ movimenta[0]['y']+') ' + movimenta[0]['peca'] + ' ' + movimenta[0]['cor'] + ' -> (' + movimenta[1]['x'] +','+ movimenta[1]['y']+')');
 
+				for (var x = 0; x < Vetor_JOG.length; x++)
+				{
+					if (Vetor_JOG[x].ID == ws.Adv) {
+						MSG.valor.vez = Vetor_JOG[x].Cor; // envia pro adversario a cor
+						ws.send(JSON.stringify(MSG)); // envia para jogador
+						Vetor_JOG[x].send(JSON.stringify(MSG)); // envia para adversario
+						
+						var ganhou = {
+							tipo: 'GANHOU',
+							valor: ws.ID
+						};
+						ws.send(JSON.stringify(ganhou)); // envia para jogador
+						Vetor_JOG[x].send(JSON.stringify(ganhou)); // envia para adversario
+						flag = true;
+						console.log(ws.ID+' ganhou de '+ws.Adv);
+						console.log('JOGO FINALIZADO!');
+						Vetor_JOG[x].Adv = "";
+						Vetor_JOG[x].Status = 'Livre';
+						Vetor_JOG[x].Cor = "";
+						
+						for(var i = 0; i < Vetor_JOG.length; i++){
+							if(Vetor_JOG[i] == ws){
+								Vetor_JOG[i].Adv = "";
+								Vetor_JOG[i].Status = 'Livre';
+								Vetor_JOG[i].Cor = "";
+							}
+						}
+						
+						enviarListaAtualizada(); 
+						break;
+					}
+					
+				}
+				
+				if(flag == false){
+					for (var x = 0; x < Vetor_JOG.length; x++)
+					{
+						if (Vetor_JOG[x] == ws) {
+							Vetor_JOG[x].Adv = ''; 
+							Vetor_JOG[x].Status = 'Livre';
+							Vetor_JOG[x].Cor = '';
+							break;
+						}
+					}
+					var msgFim = {
+						tipo: 'FINALIZAR',
+						valor: {nomeRemetente: 'ADVERSARIO'}
+					}; // envia mensagem ao REMENTENTE para finalizar jogo
+					ws.send(JSON.stringify(msgFim));
+					enviarListaAtualizada(); // Envia para todos a lista atualizada de usuários
+				}
+			}	
+		}
 
         if (MSG.tipo == 'CONVIDAR') // rementente solicitou convite de jogo para destinatario
         {
@@ -134,10 +183,7 @@ wss.on('connection', function connection(ws) {
 					break;
                 } 
             }
-
         }
-
-
 
         if (MSG.tipo == 'ACEITA') // destinatario aceitou convite de jogo do remetente
         {
@@ -191,27 +237,26 @@ wss.on('connection', function connection(ws) {
 
         }
 
-/*
-
-
         if (MSG.tipo == 'FINALIZAR') // Algum jogador quer finalizar o jogo
         {
 
             console.log(MSG.valor.remetente + ' Finalizou o jogo com -> ' + MSG.valor.destinatario);
 
-            for (let x = 0; x < Vetor_JOG.length; x++) {
+            for (var x = 0; x < Vetor_JOG.length; x++) {
                 if (Vetor_JOG[x].ID == MSG.valor.remetente) // atualiza lista REMETENTE
                 {
                     Vetor_JOG[x].Status = 'Livre';
                     Vetor_JOG[x].Adv = '';
+					Vetor_JOG[x].Cor = '';
                 }
 
                 if (Vetor_JOG[x].ID == MSG.valor.destinatario) // atualiza lista DESTINATARIO
                 {
                     Vetor_JOG[x].Status = 'Livre';
                     Vetor_JOG[x].Adv = '';
+					Vetor_JOG[x].Cor = '';
 					MSG.valor.nomeRemetente = 'ADVERSARIO';
-                    let msgFim = {
+                    var msgFim = {
                         tipo: 'FINALIZAR',
                         valor: MSG.valor
                     }; // envia mensagem ao DESTINATARIO para finalizar jogo
@@ -220,21 +265,20 @@ wss.on('connection', function connection(ws) {
             }
             enviarListaAtualizada(); // Envia para todos a lista atualizada de usuários
         }
-
-*/
     });
 
     ws.on('close', function close() { // se alguem desconectar, retire da lista e finaliza o jogo
-/*
+
 		if (ws.Adv!=''){
             console.log(ws.ID + ' Finalizou o jogo com -> ' + ws.Adv);
-			for (let x = 0; x < Vetor_JOG.length; x++) {
+			for (var x = 0; x < Vetor_JOG.length; x++) {
                 if (Vetor_JOG[x].ID == ws.Adv) // atualiza lista DESTINATARIO
                 {
                     Vetor_JOG[x].Status = 'Livre';
                     Vetor_JOG[x].Adv = '';
+					Vetor_JOG[x].Cor = '';
 					
-                    let msgFim = {
+                    var msgFim = {
                         tipo: 'FINALIZAR',
                         valor: {remetente: ws.ID, nomeRemetente: 'ADVERSARIO'}
                     }; // envia mensagem ao DESTINATARIO para finalizar jogo
@@ -243,25 +287,16 @@ wss.on('connection', function connection(ws) {
             }
 		}
 		
-        for (let x = 0; x < Vetor_JOG.length; x++) {	// remove usuario que saiu da pagina
+        for (var x = 0; x < Vetor_JOG.length; x++) {	// remove usuario que saiu da pagina
             if (Vetor_JOG[x] == ws) {
 				console.log(ws.ID + ' desconectou.');
                 Vetor_JOG.splice(x, 1);
                 break;
             }
         }
-
         enviarListaAtualizada(); // Envia para todos a lista atualizada de usuários
-*/
     });
-
-
 });
-
-
-
-
-
 
 function fazBroadcast(msg) {
     for (var x = 0; x < Vetor_JOG.length; x++) {
@@ -272,7 +307,6 @@ function fazBroadcast(msg) {
         }
     }
 }
-
 
 
 
@@ -288,11 +322,183 @@ function enviarListaAtualizada() { // envia lista de jogadores atualizada
 			Cor: Vetor_JOG[x].Cor
         });
     }
-	//console.log('LISTA-ATUALIZADA: '+lista);
-
+	
     var msgLista = {
         tipo: 'LISTA',
         valor: lista
     };
     fazBroadcast(msgLista);
+}
+
+function verifica_possivel(x,y,c){ // faz a busca no vetor de possíveis verificando se tem a posição de destino neste vetor 
+	var pode=0;
+	var cp;
+	var div = "t"+x+y;
+	
+	for(cp=1;cp<c;cp++){
+		
+		if(possiveis[cp]==div){
+			pode ++;
+		}
+		if(pode>0){
+			return 1;
+		}
+	}	
+}
+
+function possiveis_movimentos(x, y){
+	
+		var c = 0; //contador pro array possiveis
+		var i; //contador pros for
+		
+		possiveis[c] = "t"+x+y; c++;
+       ///////////////////////////////////////////////////////////////////////////////////PEAO////////////////////////////////
+		
+		if(peca[x][y]['peca']=='peao'){
+			
+			if(peca[x][y]['cor']=='branco'){
+					
+					if(!peca[x-1][y]['peca']){
+						possivel(x-1,y);
+					}if(y-1>0 && peca[x-1][y-1]['peca']){
+						possivel(x-1,y-1);						
+					}
+					if(y+1<9 && peca[x-1][y+1]['peca']){
+						possivel(x-1,y+1);					
+					}					
+
+					if(x==7){ // primeiro movimento pulo duplo
+						if(!peca[x-2][y]['peca'] && !peca[x-1][y]['peca']){
+							possivel(x-2,y);
+						}
+					}
+
+			}
+			
+			if(peca[x][y]['cor']=='preto'){
+					
+					if(!peca[x+1][y]['peca']){
+						possivel(x+1,y);
+					}if(y-1>0 && peca[x+1][y-1]['peca']){
+						possivel(x+1,y-1);						
+					}
+					if(y+1<9 && peca[x+1][y+1]['peca']){
+						possivel(x+1,y+1);					
+					}					
+
+					if(x==2){ // primeiro movimento pulo duplo
+					
+						if(!peca[x+2][y]['peca'] && !peca[x+1][y]['peca']){
+							possivel(x+2,y);
+						}
+			
+					}
+
+			}
+		}
+       ///////////////////////////////////////////////////////////////////////////////////////FIM PEAO//////////////////////////////
+
+       //////////////////////////////////////////////////////////////////////////////////////CAVALO ////////////////////////////////
+
+		if(peca[x][y]['peca']=='cavalo'){
+			
+			possivel(x-1,y-2);
+			possivel(x+1,y+2);
+			possivel(x+1,y-2);
+			possivel(x-1,y+2);
+			possivel(x-2,y-1);
+			possivel(x+2,y+1);
+			possivel(x+2,y-1);
+			possivel(x-2,y+1);
+			
+		}
+       //////////////////////////////////////////////////////////////////////////////////////FIM CAVALO ////////////////////////////
+
+       //////////////////////////////////////////////////////////////////////////////////////REI ///////////////////////////////////
+		if(peca[x][y]['peca']=='rei'){
+			possivel(x-1,y);
+			possivel(x,y-1);
+			possivel(x-1,y-1);
+			possivel(x+1,y);
+			possivel(x,y+1);
+			possivel(x+1,y+1);
+			possivel(x-1,y+1);
+			possivel(x+1,y-1);
+		}
+       //////////////////////////////////////////////////////////////////////////////////////FIM REI ////////////////////////////
+
+
+       //////////////////////////////////////////////////////////////////////////////////////TORRE ///////////////////////////////////
+		if(peca[x][y]['peca']=='torre'){
+			
+			for(i=1;possivel(x-i,y);i++);
+			for(i=1;possivel(x+i,y);i++);
+			for(i=1;possivel(x,y-i);i++);
+			for(i=1;possivel(x,y+i);i++);
+		}
+       //////////////////////////////////////////////////////////////////////////////////////FIM TORRE ////////////////////////////
+
+       //////////////////////////////////////////////////////////////////////////////////////BISPO ///////////////////////////////////
+		if(peca[x][y]['peca']=='bispo'){
+			
+			for(i=1;possivel(x-i,y-i);i++);
+			for(i=1;possivel(x+i,y+i);i++);
+			for(i=1;possivel(x-i,y+i);i++);
+			for(i=1;possivel(x+i,y-i);i++);
+		}
+       //////////////////////////////////////////////////////////////////////////////////////FIM BISPO ////////////////////////////
+
+       //////////////////////////////////////////////////////////////////////////////////////RAINHA ///////////////////////////////////
+		if(peca[x][y]['peca']=='rainha'){
+			
+			for(i=1;possivel(x-i,y-i);i++);
+			for(i=1;possivel(x+i,y+i);i++);
+			for(i=1;possivel(x-i,y+i);i++);
+			for(i=1;possivel(x+i,y-i);i++);
+			for(i=1;possivel(x-i,y);i++);
+			for(i=1;possivel(x+i,y);i++);
+			for(i=1;possivel(x,y-i);i++);
+			for(i=1;possivel(x,y+i);i++);
+			
+		}
+       //////////////////////////////////////////////////////////////////////////////////////FIM RAINHA ////////////////////////////
+
+		function possivel(px,py){
+				
+				if(px>0 && px <9 && py>0 && py <9 && peca[px][py]['cor']!= movimenta[0]['cor']){
+					//document.getElementById('t'+(px)+(py)).style.backgroundColor = "#3C9"; //muda cor de fundo
+					possiveis[c] = "t"+(px)+(py); 
+					c++;
+					
+					if(!peca[px][py]['peca']){
+						return true;
+					}
+				}else{
+					return false;
+				}
+		}
+	return c;
+}
+
+
+function seleciona(x,y){
+		var cont_possiveis;
+		cont_possiveis = possiveis_movimentos(movimenta[0]['x'],movimenta[0]['y']);	
+
+		if(verifica_possivel(x,y,cont_possiveis)){ //se for segundo clique e a cor da peca destino for diferente da selecionada
+			
+			if(peca[x][y]['peca']=="rei"){
+				return 1;
+			}
+			if(peca[x][y]['cor'] != movimenta[0]['cor']){ // peça selecionada é diferente da peça de origem
+				
+				
+				peca[x][y]['peca'] = movimenta[0]['peca'];	//posicao destino recebe a peca
+				peca[x][y]['cor'] = movimenta[0]['cor'];		//posicao destino recebe a cor
+								
+				peca[movimenta[0]['x']][movimenta[0]['y']]['peca'] = false;		//peca selecionada recebe 0
+				peca[movimenta[0]['x']][movimenta[0]['y']]['cor'] = false;		//cor selecionada recebe 0	
+			}
+		}
+	return 0;
 }

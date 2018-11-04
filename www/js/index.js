@@ -1,5 +1,4 @@
-// Variáveis
-
+// Variáveis Globais
 var meuID;
 var websocket;
 var TIMEOUT = 20000;
@@ -11,17 +10,18 @@ var Flag=0;
 var timeStart=0;
 var msg_CONVITE;
 var vez; //vez de quem jogar
-
-
+var peca = new Array();
+var il = new Array();
 
 function inicia_jogo(){
 	
 	document.getElementById('lista_jogadores').style.display='none';
 	document.getElementById('escolhecor-inicio').style.display='none';
 	document.getElementById('fundo').style.display='none';
-
-    
-
+	document.getElementById('info_partida').style.display='block';
+	document.getElementById('adversario_vez').innerHTML = 'ADV: '+meuID.Adv;	
+	document.getElementById('cor_vez').innerHTML = 'SOU: '+ meuID.Cor;	
+   
 //muda a classe das pecas pretas(encima) para mostrar imgens das pecas
 	document.getElementById("t11").innerHTML = "&#9820;";	// torre
 	document.getElementById("t12").innerHTML = "&#9822;";	// cavalo
@@ -60,98 +60,92 @@ function inicia_jogo(){
 	document.getElementById("t77").innerHTML = "&#9817;";	// peao
 	document.getElementById("t78").innerHTML = "&#9817;";	// peao
 	
-
-
 	//cria array que vai receber as posicoes do tabuleiro
 	cria_array();
 	function cria_array(){
 		var x,y;
-		
-		peca = new Array();
+
+		peca = {}; 
 		
 		for(x=1;x<=8;x++){
 			
 			peca[x] = new Array();
+			peca[x] = {}; 
 			
 			for(y=1;y<=8;y++){
+				
 			
 				peca[x][y] = new Array();
+				peca[x][y] = {};
 				peca[x][y]['peca'] = false; 		//definido como falso para não começar com peça as que ficarem nulas
 				peca[x][y]['cor'] = false;			//definido como falso para não começar com peça as que ficarem nulas
 			 
 			}
 		}
 		
-
-		il = new Array();
 		il['preto'] = new Array();
 		il['branco'] = new Array();
 	
-	}
-
-
-	
-	
+	}	
 		
 //posiciona as pecas pretas no array
-	peca[1][1]['peca']="torre";		peca[1][1]['cor']="preto";	/*peca[1][1]['mov']=0;*/ il['preto']['torre'] = "&#9820;";
-	peca[1][2]['peca']="cavalo";	peca[1][2]['cor']="preto";	/*peca[1][2]['mov']=0;*/ il['preto']['cavalo'] = "&#9822;";
-	peca[1][3]['peca']="bispo"; 	peca[1][3]['cor']="preto";	/*peca[1][3]['mov']=0;*/ il['preto']['bispo'] = "&#9821;";
-	peca[1][4]['peca']="rainha";	peca[1][4]['cor']="preto";	/*peca[1][4]['mov']=0;*/ il['preto']['rainha'] = "&#9819;";
-	peca[1][5]['peca']="rei";		peca[1][5]['cor']="preto";	/*peca[1][5]['mov']=0;*/ il['preto']['rei'] = "&#9818;";
-	peca[1][6]['peca']="bispo";		peca[1][6]['cor']="preto";	/*peca[1][6]['mov']=0;*/ 
-	peca[1][7]['peca']="cavalo";	peca[1][7]['cor']="preto";	/*peca[1][7]['mov']=0;*/ 
-	peca[1][8]['peca']="torre";		peca[1][8]['cor']="preto";	/*peca[1][8]['mov']=0;*/
+	peca[1][1]['peca']="torre";		peca[1][1]['cor']="preto";	 il['preto']['torre'] = "&#9820;";
+	peca[1][2]['peca']="cavalo";	peca[1][2]['cor']="preto";	 il['preto']['cavalo'] = "&#9822;";
+	peca[1][3]['peca']="bispo"; 	peca[1][3]['cor']="preto";	 il['preto']['bispo'] = "&#9821;";
+	peca[1][4]['peca']="rainha";	peca[1][4]['cor']="preto";	 il['preto']['rainha'] = "&#9819;";
+	peca[1][5]['peca']="rei";		peca[1][5]['cor']="preto";	 il['preto']['rei'] = "&#9818;";
+	peca[1][6]['peca']="bispo";		peca[1][6]['cor']="preto";	
+	peca[1][7]['peca']="cavalo";	peca[1][7]['cor']="preto";	
+	peca[1][8]['peca']="torre";		peca[1][8]['cor']="preto";	
 
-	peca[2][1]['peca']="peao";		peca[2][1]['cor']="preto";	/*peca[2][1]['mov']=0;*/ il['preto']['peao'] = "&#9823;";
-	peca[2][2]['peca']="peao";		peca[2][2]['cor']="preto";	/*peca[2][2]['mov']=0;*/
-	peca[2][3]['peca']="peao"; 		peca[2][3]['cor']="preto";	/*peca[2][3]['mov']=0;*/
-	peca[2][4]['peca']="peao";		peca[2][4]['cor']="preto";	/*peca[2][4]['mov']=0;*/
-	peca[2][5]['peca']="peao";		peca[2][5]['cor']="preto";	/*peca[2][5]['mov']=0;*/
-	peca[2][6]['peca']="peao";		peca[2][6]['cor']="preto";	/*peca[2][6]['mov']=0;*/
-	peca[2][7]['peca']="peao";		peca[2][7]['cor']="preto";	/*peca[2][7]['mov']=0;*/
-	peca[2][8]['peca']="peao";		peca[2][8]['cor']="preto";	/*peca[2][8]['mov']=0;*/
+	peca[2][1]['peca']="peao";		peca[2][1]['cor']="preto";	 il['preto']['peao'] = "&#9823;";
+	peca[2][2]['peca']="peao";		peca[2][2]['cor']="preto";	
+	peca[2][3]['peca']="peao"; 		peca[2][3]['cor']="preto";	
+	peca[2][4]['peca']="peao";		peca[2][4]['cor']="preto";	
+	peca[2][5]['peca']="peao";		peca[2][5]['cor']="preto";	
+	peca[2][6]['peca']="peao";		peca[2][6]['cor']="preto";	
+	peca[2][7]['peca']="peao";		peca[2][7]['cor']="preto";	
+	peca[2][8]['peca']="peao";		peca[2][8]['cor']="preto";	
 
 //posiciona as pecas brancas no array	
-	peca[8][1]['peca']="torre";		peca[8][1]['cor']="branco";	/*peca[8][1]['mov']=0;*/ il['branco']['torre'] = "&#9814;";
-	peca[8][2]['peca']="cavalo";	peca[8][2]['cor']="branco";	/*peca[8][2]['mov']=0;*/ il['branco']['cavalo'] = "&#9816;";
-	peca[8][3]['peca']="bispo"; 	peca[8][3]['cor']="branco";	/*peca[8][3]['mov']=0;*/ il['branco']['bispo'] = "&#9815;";
-	peca[8][4]['peca']="rainha";	peca[8][4]['cor']="branco";	/*peca[8][4]['mov']=0;*/ il['branco']['rainha'] = "&#9813;";
-	peca[8][5]['peca']="rei";		peca[8][5]['cor']="branco";	/*peca[8][5]['mov']=0;*/ il['branco']['rei'] = "&#9812;";
-	peca[8][6]['peca']="bispo";		peca[8][6]['cor']="branco";	/*peca[8][6]['mov']=0;*/
-	peca[8][7]['peca']="cavalo";	peca[8][7]['cor']="branco";	/*peca[8][7]['mov']=0;*/
-	peca[8][8]['peca']="torre";		peca[8][8]['cor']="branco";	/*peca[8][8]['mov']=0;*/
+	peca[8][1]['peca']="torre";		peca[8][1]['cor']="branco";	 il['branco']['torre'] = "&#9814;";
+	peca[8][2]['peca']="cavalo";	peca[8][2]['cor']="branco";	 il['branco']['cavalo'] = "&#9816;";
+	peca[8][3]['peca']="bispo"; 	peca[8][3]['cor']="branco";	 il['branco']['bispo'] = "&#9815;";
+	peca[8][4]['peca']="rainha";	peca[8][4]['cor']="branco";	 il['branco']['rainha'] = "&#9813;";
+	peca[8][5]['peca']="rei";		peca[8][5]['cor']="branco";	 il['branco']['rei'] = "&#9812;";
+	peca[8][6]['peca']="bispo";		peca[8][6]['cor']="branco";	
+	peca[8][7]['peca']="cavalo";	peca[8][7]['cor']="branco";	
+	peca[8][8]['peca']="torre";		peca[8][8]['cor']="branco";	
 
-	peca[7][1]['peca']="peao";		peca[7][1]['cor']="branco";	/*peca[7][1]['mov']=0;*/ il['branco']['peao'] = "&#9817;";
-	peca[7][2]['peca']="peao";		peca[7][2]['cor']="branco";	/*peca[7][2]['mov']=0;*/
-	peca[7][3]['peca']="peao"; 		peca[7][3]['cor']="branco";	/*peca[7][3]['mov']=0;*/
-	peca[7][4]['peca']="peao";		peca[7][4]['cor']="branco";	/*peca[7][4]['mov']=0;*/
-	peca[7][5]['peca']="peao";		peca[7][5]['cor']="branco";	/*peca[7][5]['mov']=0;*/
-	peca[7][6]['peca']="peao";		peca[7][6]['cor']="branco";	/*peca[7][6]['mov']=0;*/
-	peca[7][7]['peca']="peao";		peca[7][7]['cor']="branco";	/*peca[7][7]['mov']=0;*/
-	peca[7][8]['peca']="peao";		peca[7][8]['cor']="branco";	/*peca[7][8]['mov']=0;*/
+	peca[7][1]['peca']="peao";		peca[7][1]['cor']="branco";	 il['branco']['peao'] = "&#9817;";
+	peca[7][2]['peca']="peao";		peca[7][2]['cor']="branco";	
+	peca[7][3]['peca']="peao"; 		peca[7][3]['cor']="branco";	
+	peca[7][4]['peca']="peao";		peca[7][4]['cor']="branco";	
+	peca[7][5]['peca']="peao";		peca[7][5]['cor']="branco";	
+	peca[7][6]['peca']="peao";		peca[7][6]['cor']="branco";	
+	peca[7][7]['peca']="peao";		peca[7][7]['cor']="branco";	
+	peca[7][8]['peca']="peao";		peca[7][8]['cor']="branco";	
 
 
-
-///array para movimentar as pecas
+//array para movimentar as pecas
 	movimenta = new Array();
 	
-	movimenta['selecionada'] = new Array();
-	movimenta['selecionada']['x'] =0;
-	movimenta['selecionada']['y'] =0;
-	movimenta['selecionada']['peca']="0";
-	movimenta['selecionada']['cor']="0";
+	movimenta[0] = new Array();
+	movimenta[0] = {};
+	movimenta[0]['x'] =0;
+	movimenta[0]['y'] =0;
+	movimenta[0]['peca']="0";
+	movimenta[0]['cor']="0";
 	
-	/*movimenta['destino'] = new Array();
-	movimenta['destino']['x'] =0;
-	movimenta['destino']['y'] =0; 
-	movimenta['destino']['peca'] ="0";
-	movimenta['destino']['cor']="0";
-	*/
-
-///array para os possiveis movimentos
+	movimenta[1] = new Array();
+	movimenta[1] = {};
+	movimenta[1]['x'] =0;
+	movimenta[1]['y'] =0; 
+	movimenta[1]['peca'] ="0";
+	movimenta[1]['cor']="0";
+	
+//array para os possiveis movimentos
 	possiveis = new Array();
-
 
 }
 
@@ -159,8 +153,8 @@ function possiveis_movimentos(){
 		var x,y;
 		var c =0; //contador pro array possiveis
 		var i; //contador pros for
-		x = movimenta['selecionada']['x'];
-		y = movimenta['selecionada']['y'];
+		x = movimenta[0]['x'];
+		y = movimenta[0]['y'];
 
 		document.getElementById('t'+x+y).style.backgroundColor = "#3C9"; //muda cor de fundo
 		possiveis[c] = "t"+x+y; c++;
@@ -186,7 +180,6 @@ function possiveis_movimentos(){
 
 			}
 			
-			
 			if(peca[x][y]['cor']=="preto"){
 					
 					if(!peca[x+1][y]['peca']){
@@ -197,7 +190,7 @@ function possiveis_movimentos(){
 					if(y+1<9 && peca[x+1][y+1]['peca']){
 						possivel(x+1,y+1);					
 					}					
-
+					
 					if(x==2){ // primeiro movimento pulo duplo
 					
 						if(!peca[x+2][y]['peca'] && !peca[x+1][y]['peca']){
@@ -205,7 +198,6 @@ function possiveis_movimentos(){
 						}
 			
 					}
-
 			}
 		}
 ///////////////////////////////////////////////////////////////////////////////////////FIM PEAO//////////////////////////////
@@ -238,7 +230,6 @@ function possiveis_movimentos(){
 			possivel(x+1,y-1);
 		}
 //////////////////////////////////////////////////////////////////////////////////////FIM REI ////////////////////////////
-
 
 //////////////////////////////////////////////////////////////////////////////////////TORRE ///////////////////////////////////
 		if(peca[x][y]['peca']=='torre'){
@@ -275,10 +266,8 @@ function possiveis_movimentos(){
 		}
 //////////////////////////////////////////////////////////////////////////////////////FIM RAINHA ////////////////////////////
 
-
-
 		function possivel(px,py){
-				if(px>0 && px <9 && py>0 && py <9 && peca[px][py]['cor']!= movimenta['selecionada']['cor']){
+				if(px>0 && px <9 && py>0 && py <9 && peca[px][py]['cor']!= movimenta[0]['cor']){
 					document.getElementById('t'+(px)+(py)).style.backgroundColor = "#3C9"; //muda cor de fundo
 					possiveis[c] = "t"+(px)+(py); c++;
 					
@@ -288,8 +277,6 @@ function possiveis_movimentos(){
 				}else{
 					return false;
 				}
-
-			
 			}
 
 	return c;
@@ -316,85 +303,59 @@ function verifica_possivel(x,y,c){ // faz a busca no vetor de possíveis verific
 			return 1;
 		}
 	}	
-	
 }
 
 function seleciona(x,y){
 	
-	//var Matriz_Sel= new Array();
 	
 	if (meuID.Cor == vez){	
 		// ((primeira vez que clica(origem) == 0 || cliquei em outra peça minha) && é a minha vez de jogar)?
-		if((movimenta['selecionada']['x'] == 0 || peca[x][y]['cor'] == movimenta['selecionada']['cor']) && peca[x][y]['cor']==vez){
-			if(movimenta['selecionada']['x']!=0){
+		if((movimenta[0]['x'] == 0 || peca[x][y]['cor'] == movimenta[0]['cor']) && peca[x][y]['cor']==vez){
+			if(movimenta[0]['x']!=0){
 				volta_fundo(); //volta a cor de fundo normal
 			}
 			if(peca[x][y]['peca']){ //se tiver uma peca nessa posição
-				movimenta['selecionada']['x'] = x;	//recebe x selecionado
-				movimenta['selecionada']['y'] = y;  //recebe y selecionado
-				movimenta['selecionada']['peca'] = peca[x][y]['peca']; //recebe a peca selecionada
-				movimenta['selecionada']['cor'] = peca[x][y]['cor'];	//recebe a cor selecionada
+				movimenta[0]['x'] = x;	//recebe x selecionado
+				movimenta[0]['y'] = y;  //recebe y selecionado
+				movimenta[0]['peca'] = peca[x][y]['peca']; //recebe a peca selecionada
+				movimenta[0]['cor'] = peca[x][y]['cor'];	//recebe a cor selecionada
 				
 				cont_possiveis = possiveis_movimentos();	
+			
 			}
 			
 		}else if(verifica_possivel(x,y,cont_possiveis)){ //se for segundo clique e a cor da peca destino for diferente da selecionada
 			
-			if(peca[x][y]['peca']=="rei"){
-				alert(movimenta['selecionada']['cor']+" venceu (:");
+			if(peca[x][y]['cor'] != movimenta[0]['cor']){ // peça selecionada é diferente da peça de origem
 				
-			}
-			
-			//Pra trocar de peça quando o peão chegar do outro lado
-			if(movimenta['selecionada']['peca']=='peao' && movimenta['selecionada']['cor']=='branco' && x==1){
-				document.getElementById('escolhebranco').style.display='block';	
-				document.getElementById('fundo').style.display='block';	
-				xe=x;ye=y;
-			}
-			if(movimenta['selecionada']['peca']=='peao' && movimenta['selecionada']['cor']=='preto' && x==8){
-				document.getElementById('escolhepreto').style.display='block';	
-				document.getElementById('fundo').style.display='block';					
-				xe=x;ye=y;
-			}
-			
-			if(peca[x][y]['cor'] != movimenta['selecionada']['cor']){ // peça selecionada é diferente da peça de origem
-				
-				/*movimenta['destino']['x'] = x;	//recebe o x do destino(segundo clique)
-				movimenta['destino']['y'] = y;  //recebe y do destino(segundo clique)
+				movimenta[1]['x'] = x;	//recebe o x do destino(segundo clique)
+				movimenta[1]['y'] = y;  //recebe y do destino(segundo clique)
 				
 				if(peca[x][y]['peca']){  //se tiver alguma peca nessa posição
-					movimenta['destino']['peca'] = peca[x][y]['peca'];	//destino recebe a peca selecionada
-					movimenta['destino']['cor'] = peca[x][y]['cor'];	//destino recebe a cor selecionada
+					movimenta[1]['peca'] = peca[x][y]['peca'];	//destino recebe a peca selecionada
+					movimenta[1]['cor'] = peca[x][y]['cor'];	//destino recebe a cor selecionada
 				}
-				*/
+		
+				websocket.send(JSON.stringify({
+							tipo: 'MOVIMENTO',
+							valor: {peca,movimenta}
+						}))
 				
-				document.getElementById("t"+movimenta['selecionada']['x']+""+movimenta['selecionada']['y']).innerHTML = ""; //selcionada fica sem imagem
-				document.getElementById("t"+x+""+y).innerHTML = il[movimenta['selecionada']['cor']][movimenta['selecionada']['peca']]; //destino recebe a imagem da peça selecinada
-				peca[x][y]['peca']=movimenta['selecionada']['peca'];	//posicao destino recebe a peca
-				peca[x][y]['cor']=movimenta['selecionada']['cor'];		//posicao destino recebe a cor
-								
-				peca[movimenta['selecionada']['x']][movimenta['selecionada']['y']]['peca'] = false;		//peca selecionada recebe 0
-				peca[movimenta['selecionada']['x']][movimenta['selecionada']['y']]['cor'] = false;		//cor selecionada recebe 0
-					
-				movimenta['selecionada']['x'] =0;	//selecionada x recebe 0 (pra na proxima ver q é o primeiro movimento)
-				movimenta['selecionada']['y'] =0;	//selecionada y recebe 0 (pra na proxima ver q é o primeiro movimento)
-				movimenta['selecionada']['peca']="0";	//selecionada peca recebe 0 (pra na proxima ver q é o primeiro movimento)
-				movimenta['selecionada']['cor']="0";	//selecionada cor recebe 0 (pra na proxima ver q é o primeiro movimento)
+				vez = "";
+				movimenta[0]['x'] =0;	//selecionada x recebe 0 (pra na proxima ver q é o primeiro movimento)
+				movimenta[0]['y'] =0;	//selecionada y recebe 0 (pra na proxima ver q é o primeiro movimento)
+				movimenta[0]['peca']="0";	//selecionada peca recebe 0 (pra na proxima ver q é o primeiro movimento)
+				movimenta[0]['cor']="0";	//selecionada cor recebe 0 (pra na proxima ver q é o primeiro movimento)
 				
+				movimenta[1]['x'] =0;	//destino x recebe 0 (pra na proxima ver q é o primeiro movimento)
+				movimenta[1]['y'] =0;	//destino y recebe 0 (pra na proxima ver q é o primeiro movimento)
+				movimenta[1]['peca']="0";	//destino peca recebe 0 (pra na proxima ver q é o primeiro movimento)
+				movimenta[1]['cor']="0";	//destino cor recebe 0 (pra na proxima ver q é o primeiro movimento)
 				
 			}
-
 			volta_fundo(); //volta a cor de fundo normal
-			
-			//if(vez=="branco"){vez="preto";}else{vez="branco";} //troca a vez
-
 		}
-		
 	}
-		
-		
-
-	
 }
 
 	function escolhe(pecae,core){
@@ -405,6 +366,7 @@ function seleciona(x,y){
 	}
 
 	function escolhecor_incio(cor){
+			
 			document.getElementById('escolhecor-inicio').style.display='none';
 			
 			if (cor != 'nulo')
@@ -414,11 +376,11 @@ function seleciona(x,y){
 				meuID.Cor = cor; //cor de quem joga
 			}
 			
-			//alert(meuID.Cor);
-			
 			if (cor == 'preto' || cor == 'branco'){
 				if(Date.now()-timeStart>TIMEOUT){
 					troca_valor_div("TEMPO ESGOSTADO PARA RESPOSTA!");
+					document.getElementById('fundo').style.display='block';
+					document.getElementById('lista_jogadores').style.display='block';
 				}else{
 							meuID.Status = 'Jogando';
 							meuID.Adv = msg_CONVITE.valor.remetente;
@@ -427,21 +389,29 @@ function seleciona(x,y){
 								tipo: 'ACEITA',
 								valor: msg_CONVITE.valor
 							}))
+							clearTimeout(timeMSG);
 							
 						if(meuID.Cor=="branco"){vez="preto";}else{vez="branco";}
 						inicia_jogo(); // inicia jogo
+						document.getElementById('id_vez').innerHTML = 'VEZ: '+vez;
+						
 				}
 				
-			} else { // Caso recuse
+			}else { // Caso recuse
 
 				if(Date.now()-timeStart>TIMEOUT){
 					troca_valor_div("TEMPO ESGOSTADO PARA RESPOSTA!");
+					document.getElementById('fundo').style.display='block';
+					document.getElementById('lista_jogadores').style.display='block';
+
 				}else{
 						msg_CONVITE.valor.nomeDestinatario = meuID.Nome;
 						websocket.send(JSON.stringify({
 							tipo: 'RECUSA',
 							valor: msg_CONVITE.valor
 						}))
+						document.getElementById('fundo').style.display='block';
+						document.getElementById('lista_jogadores').style.display='block';
 				}
 			}
 
@@ -462,21 +432,11 @@ function seleciona(x,y){
             };
 
             meuID = user;
-
             connect();
-			
 			console.log(meuID);
-			
 			document.getElementById('lista_jogadores').style.display='block';
 			
-			//document.getElementById('botao').style.display='none';
-			//document.getElementById('alerta').style.display='block';
-			//alert('Aguarde!');
 	}
-	
-	
-	
-	
 	
 	function connect() {
             websocket = new WebSocket('ws://localhost:8080');
@@ -498,7 +458,6 @@ function seleciona(x,y){
 			
             websocket.onerror = function(err) {
                 console.error('Erro encontrado no socket', err.message, 'Fechando socket');
-                // websocket.close();
             };
         };
 
@@ -531,9 +490,9 @@ function seleciona(x,y){
                     meuID.Adv = msg.valor.destinatario;
 					meuID.Cor = msg.valor.Cor;
                     meuID.Status = 'Jogando';
-					//alert(meuID.Cor);
 					clearTimeout(timeMSG);
 					vez = msg.valor.Cor;
+					document.getElementById('id_vez').innerHTML = 'VEZ: '+vez;
                     inicia_jogo(); // inicia jogo
                     break;
                 case 'RECUSOU': // Recebe a recusa de convite para jogar
@@ -541,13 +500,47 @@ function seleciona(x,y){
 					document.getElementById('lista_jogadores').style.display='block';
                     troca_valor_div(msg.valor.nomeDestinatario + ' nao aceitou seu convite, tente outro jogador.');
                     break;
+				case 'MOVIMENTO':
+					console.log('MENSAGEM RECEBIDA PELO SERVIDOR: \t');
+					console.log(msg.valor.peca);
+					peca = msg.valor.peca;
+					posicionar_pecas();
+					vez = msg.valor.vez;
+					document.getElementById('id_vez').innerHTML = 'VEZ: '+vez;
+					break;
+				case 'FINALIZAR': // Recebe mensagem que adversário finalizou jogo
+                    troca_valor_div(msg.valor.nomeRemetente + ' decidiu finalizar o jogo.');
+                    finalizarJogo();
+                    break;
+				case 'GANHOU':
+					if(msg.valor == meuID.ID){
+						troca_valor_div('PARABÉNS, VOCÊ GANHOU! :)');
+					}else {
+						troca_valor_div('VOCÊ PERDEU. :(');
+					}
+					finalizarJogo();
+					break;
             }
             console.log('Recebeu msg');
         };
 		
-		
-		
-		
+		function finalizarJogo() { // finaliza jogo, limpa tabuleiro e botões
+
+            meuID.Status = 'Livre';
+            meuID.Adv = '';
+			meuID.Cor = '';
+			
+			for (var i = 1; i <= 8; i++){
+				for(var j = 1; j <= 8; j++){
+					document.getElementById("t"+i+j).innerHTML = ""; 
+				}
+			}
+			
+			document.getElementById('lista_jogadores').style.display='block';
+			document.getElementById('fundo').style.display='block';
+			document.getElementById('info_partida').style.display='none';
+			
+		}
 		
         function RefreshCombo(Dados) // Atualiza combobox com a lista atualizada recebida
         {
@@ -577,8 +570,6 @@ function seleciona(x,y){
             }
         }
 		
-		
-		
         function convidar() { // Fazer um convite de jogo
 
             if (adversario.options[adversario.selectedIndex].text.match(/Livre/)) {
@@ -597,10 +588,7 @@ function seleciona(x,y){
 					document.getElementById('lista_jogadores').style.display='block';
 					troca_valor_div('TEMPO ESGOTADO! Tente novamente...');
 				},TIMEOUT);
-				
                 troca_valor_div('Convite enviado, aguarde.');
-				
-				
             } else {
                 troca_valor_div('Jogador ocupado, tente outro adversario');
             }
@@ -620,5 +608,30 @@ function seleciona(x,y){
 			document.getElementById('escolhecor-inicio-adv_text').innerHTML = adversario;
 			document.getElementById('escolhecor-inicio').style.display='block';	
 		}
-
-
+		
+		function posicionar_pecas(){
+			
+			for(var x = 1; x <=8; x++){
+				for(var y = 1; y <= 8; y++){
+					if(peca[x][y]['peca'] == false){
+						document.getElementById("t"+x+y).innerHTML = ""; //selecionada fica sem imagem
+					}else{
+						document.getElementById("t"+x+y).innerHTML = il[peca[x][y]['cor']][peca[x][y]['peca']]; //destino recebe a imagem da peça selecinada
+					}
+				}
+			}
+		}
+		
+		function Botao_FinalizarJogo(){
+			
+				let FIM = {
+					tipo: 'FINALIZAR',
+					valor: {
+						destinatario: meuID.Adv,
+						remetente: meuID.ID,
+						nomeRemetente: meuID.Nome
+					}
+				};
+				websocket.send(JSON.stringify(FIM));
+				finalizarJogo();
+		}

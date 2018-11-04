@@ -13,7 +13,6 @@
 
 #t12, #t14, #t16, #t18, #t21, #t23, #t25, #t27, #t32, #t34, #t36, #t38, #t41, #t43, #t45, #t47, #t52, #t54, #t56, #t58, #t61, #t63, #t65, #t67, #t72, #t74, #t76, #t78, #t81, #t83, #t85, #t87{background-color:#999;} 
 
-
 div{ cursor:pointer;}
 
 #fundo{background:#000; position:fixed; width:100%; height:100%; z-index:999; top:0; left:0; opacity:0.50;-moz-opacity: 0.50;filter: alpha(opacity=50);}
@@ -25,18 +24,14 @@ div{ cursor:pointer;}
 #peca2{position:relative; left:5%; width:10%; height:10%;}
 #escolhecor-inicio_recusar{position:relative; left:25%; }
 
-
-
 #nome{ display:block; left:43%; top:45%; }
 #botao{ display:block; left:44%; top:40%; margin-left:28%;}
 .jogador{position:fixed;top:20%;left:40%;display:none;z-index:1000;background:#FFF;border:#000 solid 1px;}
-
 
 #alerta{ display:none; left:43%; top:43%; width:200px; height:70px; }
 #ok { display:block; width:80px; margin-top:10%; margin-left:30%; }
 #alerta_text {text-align: center; margin-top:3%;}
 .alerta{position:fixed; z-index:1000;background:#FFF;border:#000 solid 1px;}
-
 
 #lista_jogadores{ display:none; left:42.5%; top:43%; width:200px; height:70px; }
 #lista_jogadores_text {text-align: center; margin-top:3%; left:40%;}
@@ -49,3 +44,10 @@ div{ cursor:pointer;}
 #id_generico_filho{text-align: center; margin-top:3%; left:40%;}
 #trocar{ position:relative; left:35%} 
 .id_generico_pai{position:fixed; z-index:1001;background:#FFF;border:#000 solid 1px;}
+
+#info_partida{display:none; text-align: center; margin-top:3%; left:5%; width:20%; height:18%;}
+#cor_vez{ position:relative; margin-top:3%;}  
+#adversario_vez{ position:relative; margin-top:3%;} 
+#id_vez{ position:relative; margin-top:3%; color:#FF0000;}
+#finalizar_jogo{margin-top:3%;}
+.info_partida{position:fixed; z-index:1001;background:#FFF;border:#000 solid 2px;}

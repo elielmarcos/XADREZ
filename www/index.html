@@ -4,8 +4,7 @@
 <link rel="stylesheet" href="css/estilo.css">
 <script language="javascript" src="js/index.js"></script>
 </head>
-<!-- <body onload="inicia_jogo();">
--->
+
 <div id="fundo"></div>
 
 <div id="alerta" class="alerta" >
@@ -16,7 +15,14 @@
 <div id="id_generico_pai" class="id_generico_pai" >
 <div id="id_generico_filho"></div>
 </br>
-<button id="trocar" onclick="OK();">Botao</button>
+<button id="trocar" onclick="OK();">OK</button>
+</div>
+
+<div id="info_partida" class="info_partida" >
+<div id="cor_vez">Qual cor?</div>
+<div id="adversario_vez">Qual adversario?</div>
+<div id="id_vez">Vez de quem?</div>
+<button id="finalizar_jogo" onclick="Botao_FinalizarJogo();">Finalizar jogo</button>
 </div>
 
 <div id="lista_jogadores" class="lista_jogadores" >
@@ -44,14 +50,13 @@
     </div>
 </div>
 
-
-
 <div id="escolhebranco" class="escolhe">
 	<div onclick="escolhe('rainha','branco');">&#9813;</div>
     <div onclick="escolhe('torre','branco');">&#9814;</div>
     <div onclick="escolhe('cavalo','branco');">&#9816;</div>
     <div onclick="escolhe('bispo','branco');">&#9815;</div>
 </div>
+
 <div id="escolhepreto" class="escolhe">
 	<div onclick="escolhe('rainha','preto');">&#9819;</div>
     <div onclick="escolhe('torre','preto');">&#9820;</div>
