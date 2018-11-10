@@ -14,10 +14,14 @@ const addresses = Object.keys(interfaces)
 const portExpress = 8000;
 const portWS = 8080;
 
+var websocket;
+var Flag_Backup = 0;
+
 var Vetor_JOG = [];
 var possiveis = new Array();
 var movimenta;
 var peca;
+var log;
 
 app.use(express.static('www'));
 
@@ -26,14 +30,59 @@ const wss = new WebSocket.Server({port : portWS}, function() {
     console.log('WEBSOCKET RODANDO NA PORTA http://%s:%s', addresses,portWS);
 });
 
-// porta 8000: porta de conexão websocket
-// porta 8080: porta da página requisitada
+// porta 8080: porta de conexão websocket
+// porta 8000: porta da página requisitada
 
 var server = app.listen(portExpress , function () {
     var port = server.address().port;
     console.log('EXPRESS RODANDO NA PORTA http://%s:%s', addresses, port);
-})
+});
 
+ connect_Backup();
+
+	function connect_Backup() {
+            websocket = new WebSocket('ws://localhost:9000');
+            websocket.onopen = function() {
+				Flag_Backup = 1;
+				var MSG = {
+					tipo: 'CONECTAR',
+					valor: 'SERVIDOR_1'
+				};
+				websocket.send(JSON.stringify(MSG));
+
+            };
+			
+            websocket.onclose = function(e) {
+                Flag_Backup = 0;
+				console.log('Reconectando com SERVIDOR_BACKUP...');
+                websocket.close();
+				setTimeout(function() {
+                    connect_Backup();
+                }, 5000);
+            };
+			
+            websocket.onmessage = function(e) {
+                //console.log('Message:', e.data);
+                //onMessage(e);
+            };
+			
+            websocket.onerror = function(err) {
+                //console.error('Erro encontrado no socket', err.message, 'Fechando socket');
+            };
+        };
+
+
+function envia_log(data){
+	
+	if(Flag_Backup){
+		websocket.send(JSON.stringify({
+					tipo: 'LOG',
+					valor: data
+		}));
+	}				
+	
+};
+		
 wss.on('connection', function connection(ws) {
 
     ws.ID = '';
@@ -54,10 +103,17 @@ wss.on('connection', function connection(ws) {
             Vetor_JOG[Vetor_JOG.length - 1].Status = MSG.valor.Status;
             Vetor_JOG[Vetor_JOG.length - 1].Adv = MSG.valor.Adv;
 			Vetor_JOG[Vetor_JOG.length - 1].Cor = MSG.valor.Cor;
+			
+			log = MSG.valor.ID + ' - ' + MSG.valor.Nome + ' - ' + MSG.valor.Status + ' - ' + MSG.valor.Adv + ' - ' + MSG.valor.Cor + ' conectou.';
+            console.log(log);
+			envia_log(log);
+			
+			log = 'Conectado(s): ' + Vetor_JOG.length;
+            console.log(log);
+			envia_log(log);
 
-            console.log(MSG.valor.ID + ' - ' + MSG.valor.Nome + ' - ' + MSG.valor.Status + ' - ' + MSG.valor.Adv + ' - ' + MSG.valor.Cor + ' conectou.');
-            console.log('Conectado(s): ' + Vetor_JOG.length);
-
+			
+			
             var msgRetorno = {
                 tipo: 'CONECTADO',
                 valor: 'CONECTADO!'
@@ -76,7 +132,10 @@ wss.on('connection', function connection(ws) {
 			if(!seleciona(movimenta[1]['x'],movimenta[1]['y'])){
 			
 				var flag = false;
-				console.log(ws.ID + ' realizou movimento (' + movimenta[0]['x'] +','+ movimenta[0]['y']+') ' + movimenta[0]['peca'] + ' ' + movimenta[0]['cor'] + ' -> (' + movimenta[1]['x'] +','+ movimenta[1]['y']+')');
+				log = ws.ID + ' realizou movimento (' + movimenta[0]['x'] +','+ movimenta[0]['y']+') ' + movimenta[0]['peca'] + ' ' + movimenta[0]['cor'] + ' -> (' + movimenta[1]['x'] +','+ movimenta[1]['y']+')';
+				console.log(log);
+				envia_log(log);
+				
 
 				for (var x = 0; x < Vetor_JOG.length; x++)
 				{
@@ -108,7 +167,10 @@ wss.on('connection', function connection(ws) {
 				}
 			}else{
 				var flag = false;
-				console.log(ws.ID + ' realizou movimento (' + movimenta[0]['x'] +','+ movimenta[0]['y']+') ' + movimenta[0]['peca'] + ' ' + movimenta[0]['cor'] + ' -> (' + movimenta[1]['x'] +','+ movimenta[1]['y']+')');
+				log = ws.ID + ' realizou movimento (' + movimenta[0]['x'] +','+ movimenta[0]['y']+') ' + movimenta[0]['peca'] + ' ' + movimenta[0]['cor'] + ' -> (' + movimenta[1]['x'] +','+ movimenta[1]['y']+')';
+				console.log(log);
+				envia_log(log);
+				
 
 				for (var x = 0; x < Vetor_JOG.length; x++)
 				{
@@ -124,8 +186,9 @@ wss.on('connection', function connection(ws) {
 						ws.send(JSON.stringify(ganhou)); // envia para jogador
 						Vetor_JOG[x].send(JSON.stringify(ganhou)); // envia para adversario
 						flag = true;
-						console.log(ws.ID+' ganhou de '+ws.Adv);
-						console.log('JOGO FINALIZADO!');
+						log = ws.ID+' ganhou de '+ws.Adv+'\n'+'JOGO FINALIZADO!';
+						console.log(log);
+						envia_log(log);
 						Vetor_JOG[x].Adv = "";
 						Vetor_JOG[x].Status = 'Livre';
 						Vetor_JOG[x].Cor = "";
@@ -167,7 +230,9 @@ wss.on('connection', function connection(ws) {
         if (MSG.tipo == 'CONVIDAR') // rementente solicitou convite de jogo para destinatario
         {
 
-            console.log(MSG.valor.remetente + ' Convidou -> ' + MSG.valor.destinatario);
+			log = MSG.valor.remetente + ' Convidou -> ' + MSG.valor.destinatario;
+            console.log(log);
+			envia_log(log);
 
             for (let x = 0; x < Vetor_JOG.length; x++) {
                 if (Vetor_JOG[x].ID == MSG.valor.destinatario) {
@@ -191,7 +256,9 @@ wss.on('connection', function connection(ws) {
 
 			if(MSG.valor.Cor=='branco'){cor_remetente='preto';}else{cor_remetente='branco';}
 
-            console.log(MSG.valor.destinatario + '(' + MSG.valor.Cor + ') Aceitou convite de -> ' + MSG.valor.remetente + '(' + cor_remetente + ')' );
+			log = MSG.valor.destinatario + '(' + MSG.valor.Cor + ') Aceitou convite de -> ' + MSG.valor.remetente + '(' + cor_remetente + ')';
+            console.log(log);
+			envia_log(log);
 			
             for (var x = 0; x < Vetor_JOG.length; x++) { // atualiza lista DESTINATARIO
                 if (Vetor_JOG[x].ID == MSG.valor.destinatario) 
@@ -221,7 +288,9 @@ wss.on('connection', function connection(ws) {
         if (MSG.tipo == 'RECUSA') // destinatario recusou convite de jogo do remetente
         {
 
-            console.log(MSG.valor.destinatario + ' Recusou convite de -> ' + MSG.valor.remetente);
+			log = MSG.valor.destinatario + ' Recusou convite de -> ' + MSG.valor.remetente;
+            console.log(log);
+			envia_log(log);
 
             for (let x = 0; x < Vetor_JOG.length; x++) {
                 if (Vetor_JOG[x].ID == MSG.valor.remetente) // envia mensagem ao REMETENTE que DESTINATARIO recusou convite
@@ -240,7 +309,9 @@ wss.on('connection', function connection(ws) {
         if (MSG.tipo == 'FINALIZAR') // Algum jogador quer finalizar o jogo
         {
 
-            console.log(MSG.valor.remetente + ' Finalizou o jogo com -> ' + MSG.valor.destinatario);
+			log = MSG.valor.remetente + ' Finalizou o jogo com -> ' + MSG.valor.destinatario;
+            console.log(log);
+			envia_log(log);
 
             for (var x = 0; x < Vetor_JOG.length; x++) {
                 if (Vetor_JOG[x].ID == MSG.valor.remetente) // atualiza lista REMETENTE
@@ -270,7 +341,9 @@ wss.on('connection', function connection(ws) {
     ws.on('close', function close() { // se alguem desconectar, retire da lista e finaliza o jogo
 
 		if (ws.Adv!=''){
-            console.log(ws.ID + ' Finalizou o jogo com -> ' + ws.Adv);
+			log = ws.ID + ' Finalizou o jogo com -> ' + ws.Adv;
+            console.log(log);
+			envia_log(log);
 			for (var x = 0; x < Vetor_JOG.length; x++) {
                 if (Vetor_JOG[x].ID == ws.Adv) // atualiza lista DESTINATARIO
                 {
@@ -289,7 +362,9 @@ wss.on('connection', function connection(ws) {
 		
         for (var x = 0; x < Vetor_JOG.length; x++) {	// remove usuario que saiu da pagina
             if (Vetor_JOG[x] == ws) {
-				console.log(ws.ID + ' desconectou.');
+				log = ws.ID + ' desconectou.';
+				console.log(log);
+				envia_log(log);
                 Vetor_JOG.splice(x, 1);
                 break;
             }
@@ -307,8 +382,6 @@ function fazBroadcast(msg) {
         }
     }
 }
-
-
 
 function enviarListaAtualizada() { // envia lista de jogadores atualizada
     var lista = [];

@@ -13,13 +13,19 @@ var vez; //vez de quem jogar
 var peca = new Array();
 var il = new Array();
 
+
 function inicia_jogo(){
 	
 	document.getElementById('lista_jogadores').style.display='none';
 	document.getElementById('escolhecor-inicio').style.display='none';
 	document.getElementById('fundo').style.display='none';
 	document.getElementById('info_partida').style.display='block';
-	document.getElementById('adversario_vez').innerHTML = 'ADV: '+meuID.Adv;	
+	
+	var nomeAdv   = meuID.Adv;
+	nomeAdv = nomeAdv.toString();
+	nomeAdv = nomeAdv.split('#');
+	
+	document.getElementById('adversario_vez').innerHTML = 'ADVERSÁRIO: '+nomeAdv[0];	
 	document.getElementById('cor_vez').innerHTML = 'SOU: '+ meuID.Cor;	
    
 //muda a classe das pecas pretas(encima) para mostrar imgens das pecas
@@ -422,7 +428,7 @@ function seleciona(x,y){
 			
 			var dataAtual = new Date();
             var tempo = dataAtual.getTime();
-            var key = jogador.value + tempo;
+            var key = jogador.value +'#'+ tempo;
             var user = {
                 ID: key,
                 Nome: jogador.value,
@@ -439,16 +445,41 @@ function seleciona(x,y){
 	}
 	
 	function connect() {
-            websocket = new WebSocket('ws://localhost:8080');
+		
+            websocket = new WebSocket('ws://'+getParameterURL()+':8080');
             websocket.onopen = function() {
-                onOpen()
+                onOpen();
+            };
+			
+            websocket.onclose = function(e) {
+                console.log('Socket is closed. Reconecta em 1s', e.reason);
+                setTimeout(function() {
+                    connectBAK();
+                }, 2000);
+            };
+			
+            websocket.onmessage = function(e) {
+                console.log('Message:', e.data);
+                onMessage(e);
+            };
+			
+            websocket.onerror = function(err) {
+                console.error('Erro encontrado no socket', err.message, 'Fechando socket');
+            };
+        };
+		
+		
+		function connectBAK() {
+            websocket = new WebSocket('ws://'+getParameterURL()+':7080');
+            websocket.onopen = function() {
+                onOpen();
             };
 			
             websocket.onclose = function(e) {
                 console.log('Socket is closed. Reconecta em 1s', e.reason);
                 setTimeout(function() {
                     connect();
-                }, 1000);
+                }, 2000);
             };
 			
             websocket.onmessage = function(e) {
@@ -635,3 +666,19 @@ function seleciona(x,y){
 				websocket.send(JSON.stringify(FIM));
 				finalizarJogo();
 		}
+		
+		
+        //Acessamos a funcao passando o parametros que queremos o valor do seu retorno .Ex: o parametro [stars]
+
+		function getParameterURL() {
+			var url   = window.location;
+			url = url.toString();
+			var items = url.split('://');
+			items = items[1].split(':');
+			//alert(items[0]);
+			return items[0];
+		}
+  
+		
+		
+		
